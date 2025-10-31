@@ -1,0 +1,5 @@
+{
+  "name": "Smart Photo Studio",
+  "description": "An AI-powered web application that allows users to upload photos and use powerful tools to edit, restore, and enhance images directly in the browser.",
+  "requestFramePermissions": []
+}
