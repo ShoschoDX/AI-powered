@@ -81,8 +81,8 @@ export const ImageComparisonSlider: React.FC<ImageComparisonSliderProps> = ({ be
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
       >
-        <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 bg-white rounded-full h-8 w-8 flex items-center justify-center shadow-md">
-          <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" /></svg>
+        <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 bg-white dark:bg-gray-200 rounded-full h-8 w-8 flex items-center justify-center shadow-md">
+          <svg className="w-4 h-4 text-gray-600 dark:text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" /></svg>
         </div>
       </div>
     </div>
