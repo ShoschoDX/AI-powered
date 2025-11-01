@@ -16,7 +16,7 @@ export const fileToBase64 = (file: File): Promise<string> => {
 
 const processImage = async (base64Image: string, mimeType: string, prompt: string): Promise<string> => {
     // API key is automatically sourced from process.env.API_KEY
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
+    const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
 
     try {
         const response: GenerateContentResponse = await ai.models.generateContent({
