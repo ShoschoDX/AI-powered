@@ -1,10 +1,11 @@
-
 import React, { useState, useCallback, useMemo } from 'react';
 import { Tool } from '../types';
 import { Button } from './Button';
 import { Spinner } from './Spinner';
 import { ImageComparisonSlider } from './ImageComparisonSlider';
 import { fileToBase64, generateImageWithPrompt } from '../services/geminiService';
+import { useAuth } from '../contexts/AuthContext';
+import { useHistory } from '../contexts/HistoryContext';
 
 interface ToolCardProps {
   tool: Tool;
@@ -28,6 +29,8 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showProcessed, setShowProcessed] = useState(true);
+  const { isLoggedIn } = useAuth();
+  const { addHistoryItem } = useHistory();
 
   const handleFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -45,13 +48,23 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool }) => {
     setError(null);
     try {
       const resultBase64 = await generateImageWithPrompt(originalImage.base64, originalImage.file.type, tool.prompt);
-      setProcessedImage(`data:image/png;base64,${resultBase64}`);
+      const processedImageUrl = `data:image/png;base64,${resultBase64}`;
+      setProcessedImage(processedImageUrl);
+
+      if (isLoggedIn) {
+          const originalDataUrl = `data:${originalImage.file.type};base64,${originalImage.base64}`;
+          addHistoryItem({
+              toolTitle: tool.title,
+              originalImageUrl: originalDataUrl,
+              processedImageUrl: processedImageUrl,
+          });
+      }
     } catch (e: any) {
       setError(e.message || 'An unknown error occurred.');
     } finally {
       setIsLoading(false);
     }
-  }, [originalImage, tool.prompt]);
+  }, [originalImage, tool.prompt, tool.title, isLoggedIn, addHistoryItem]);
   
   const resetState = () => {
     if (originalImage) {

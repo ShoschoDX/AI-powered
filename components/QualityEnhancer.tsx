@@ -1,9 +1,10 @@
-
 import React, { useState, useCallback } from 'react';
 import { Button } from './Button';
 import { Spinner } from './Spinner';
 import { ImageComparisonSlider } from './ImageComparisonSlider';
 import { fileToBase64, generateImageWithPrompt } from '../services/geminiService';
+import { useAuth } from '../contexts/AuthContext';
+import { useHistory } from '../contexts/HistoryContext';
 
 interface ImageState {
   file: File;
@@ -25,6 +26,8 @@ export const QualityEnhancer: React.FC = () => {
     const [processedImage, setProcessedImage] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const { isLoggedIn } = useAuth();
+    const { addHistoryItem } = useHistory();
 
     const resetState = useCallback(() => {
         if (originalImage) {
@@ -54,13 +57,23 @@ export const QualityEnhancer: React.FC = () => {
         setError(null);
         try {
             const resultBase64 = await generateImageWithPrompt(originalImage.base64, originalImage.file.type, ENHANCER_PROMPT);
-            setProcessedImage(`data:image/png;base64,${resultBase64}`);
+            const processedImageUrl = `data:image/png;base64,${resultBase64}`;
+            setProcessedImage(processedImageUrl);
+
+            if (isLoggedIn) {
+                const originalDataUrl = `data:${originalImage.file.type};base64,${originalImage.base64}`;
+                addHistoryItem({
+                    toolTitle: 'Image Quality Enhancer',
+                    originalImageUrl: originalDataUrl,
+                    processedImageUrl: processedImageUrl,
+                });
+            }
         } catch (e: any) {
             setError(e.message || 'An unknown error occurred.');
         } finally {
             setIsLoading(false);
         }
-    }, [originalImage]);
+    }, [originalImage, isLoggedIn, addHistoryItem]);
   
     const handleDownload = useCallback(() => {
         if (!processedImage) return;
