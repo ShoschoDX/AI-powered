@@ -16,17 +16,17 @@ export const fileToBase64 = (file: File): Promise<string> => {
 
 const processImage = async (base64Image: string, mimeType: string, prompt: string): Promise<string> => {
     // API key is automatically sourced from process.env.API_KEY
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
+    const ai = new GoogleGenAI({ apiKey: "AIzaSyBJHzGR1gHAXgTop6CssIE_Tg_wGemyEWw" });
 
     try {
         const response: GenerateContentResponse = await ai.models.generateContent({
-            model: 'gemini-2.5-flash-image',
+            model: "gemini-2.0-flash-preview-image-generation",
             contents: {
                 parts: [
                     {
                         inlineData: {
                             data: base64Image,
-                            mimeType: mimeType,
+                            mimeType: "image/png",
                         },
                     },
                     {
@@ -35,9 +35,11 @@ const processImage = async (base64Image: string, mimeType: string, prompt: strin
                 ],
             },
             config: {
-                responseModalities: [Modality.IMAGE],
+                responseModalities: [Modality.TEXT, Modality.IMAGE],
             },
         });
+
+        console.log("Gemini API response:", response);
 
         const firstPart = response.candidates?.[0]?.content?.parts?.[0];
 
